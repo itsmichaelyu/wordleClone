@@ -5,26 +5,32 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
+        Words.setup();
         Wordle wordle = new Wordle();
         int status = 0;
-        String word = "";
+        int maxNumOfGuesses = Wordle.debug ? Integer.MAX_VALUE : 6;
+        String word;
         Scanner input = new Scanner(System.in);
 
-        while (status != 1) {
+        while (status != 1 && wordle.getGuesses() < maxNumOfGuesses) {
             word = "";
             while (word.length() != 5 || !Words.checkWord(word)) {
                 if (word.length() != 5 ) {
+                    if (word.equals("ANSWER")){
+                        status = 2;
+                        break;
+                    }
                     System.out.println("Enter a 5 letter word: ");
                 }
                 else {
                     System.out.println("Not a word: ");
                 }
-                word = input.next();
+                word = input.nextLine();
             }
+            if (status == 2){break;}
             status = wordle.checkWord(word);
-            if (status == 0) {
-                System.out.println(wordle.getErrors(word));
-            }
         }
+        wordle.endGame(status);
+
     }
 }
